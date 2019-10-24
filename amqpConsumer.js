@@ -1,14 +1,16 @@
 const QUEUE = process.env.QUEUE_NAME;
 const ADDR = process.env.RABBIT_MQ_ADDR;
+const amqplib = require('amqplib');
 
-async function amqp_consumer() {
+async function amqpConsumer() {
+  let amqpResponses;
   try {
-    let con = await require('amqplib').connect(ADDR);
-    let ch = await con.createChannel();
+    const con = await amqplib.connect(ADDR);
+    const ch = await con.createChannel();
     await ch.assertQueue(QUEUE, { durable: true });
 
-    let amqpResponses = async function(cllb) {
-      let { consumerTag } = await ch.consume(
+    amqpResponses = async cllb => {
+      const { consumerTag } = await ch.consume(
         QUEUE,
         msg => {
           cllb(msg.content.toString());
@@ -20,10 +22,11 @@ async function amqp_consumer() {
 
     return { amqpResponses };
   } catch (error) {
-    console.log('ERR:' + error);
+    console.log('ERR:', error);
+    return { amqpResponses };
   }
 }
 
 module.exports = {
-  amqp_consumer
+  amqpConsumer
 };
