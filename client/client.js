@@ -10,7 +10,7 @@ socket.on('msg_from_server', msg => {
   if (uList) {
     const el = document.createElement('li');
     const pre = document.createElement('pre');
-    pre.innerHTML = JSON.stringify(msg);
+    pre.innerText = JSON.stringify(msg);
     el.appendChild(pre);
     uList.appendChild(el);
   }
